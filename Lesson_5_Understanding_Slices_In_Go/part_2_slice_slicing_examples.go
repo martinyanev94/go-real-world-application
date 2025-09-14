@@ -1,0 +1,6 @@
+subSlice := slice[1:3]
+fmt.Println(subSlice) // Output: [25 30]
+subSliceFromStart := slice[:2]
+fmt.Println(subSliceFromStart) // Output: [10 25]
+subSliceTillEnd := slice[2:]
+fmt.Println(subSliceTillEnd) // Output: [30 40]
