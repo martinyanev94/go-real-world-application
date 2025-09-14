@@ -1,0 +1,17 @@
+{
+    "api_key": "123456789abc",
+    "db_connection": "user:password@/dbname"
+}
+//go:embed assets/config.json
+var configContent embed.FS
+
+func loadConfig() (map[string]interface{}, error) {
+    data, err := configContent.ReadFile("assets/config.json")
+    if err != nil {
+        return nil, err
+    }
+
+    var config map[string]interface{}
+    json.Unmarshal(data, &config)
+    return config, nil
+}
