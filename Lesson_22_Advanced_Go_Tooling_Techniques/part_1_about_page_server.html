@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>About Page</title>
+</head>
+<body>
+    <h1>This is the About Page!</h1>
+</body>
+</html>
+package main
+
+import (
+    "embed"
+    "fmt"
+    "net/http"
+)
+
+//go:embed assets/*.html
+var content embed.FS
+
+func main() {
+    http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+        filePath := r.URL.Path[1:]
+        if filePath == "" {
+            filePath = "index.html"
+        }
+
+        data, err := content.ReadFile("assets/" + filePath)
+        if err != nil {
+            http.Error(w, "File not found", http.StatusNotFound)
+            return
+        }
+        w.Header().Set("Content-Type", "text/html")
+        w.Write(data)
+    })
+
+    fmt.Println("Serving on :8080")
+    if err := http.ListenAndServe(":8080", nil); err != nil {
+        fmt.Println(err)
+    }
+}
