@@ -1,0 +1,68 @@
+{
+    "company": "Tech Innovations",
+    "employees": [
+        {
+            "name": "Alice",
+            "position": "Developer"
+        },
+        {
+            "name": "Bob",
+            "position": "Manager"
+        }
+    ]
+}
+package main
+
+import (
+    "encoding/json"
+    "fmt"
+)
+
+type Employee struct {
+    Name     string `json:"name"`
+    Position string `json:"position"`
+}
+
+type Company struct {
+    Name      string     `json:"company"`
+    Employees []Employee `json:"employees"`
+}
+
+func (c *Company) UnmarshalJSON(data []byte) error {
+    type Alias Company
+    aux := &struct {
+        Employees []Employee `json:"employees"`
+    }{
+        Employees: make([]Employee, 0),
+    }
+    
+    if err := json.Unmarshal(data, &aux); err != nil {
+        return err
+    }
+
+    c.Employees = aux.Employees
+    c.Name = "Customized: " + aux.Name // Custom modification here
+    return nil
+}
+
+func main() {
+    jsonData := []byte(`{
+        "company": "Tech Innovations",
+        "employees": [
+            {"name": "Alice", "position": "Developer"},
+            {"name": "Bob", "position": "Manager"}
+        ]
+    }`)
+
+    var company Company
+    err := json.Unmarshal(jsonData, &company)
+    if err != nil {
+        fmt.Println("Error unmarshalling JSON:", err)
+        return
+    }
+    
+    fmt.Println("Company Name:", company.Name)
+    for _, employee := range company.Employees {
+        fmt.Printf("Employee: %s, Position: %s\n", employee.Name, employee.Position)
+    }
+}
